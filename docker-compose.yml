@@ -1,0 +1,10 @@
+version: '3.2'
+
+services:
+  flutter:
+    build:
+      context: flutter_form/
+    ports:
+      - "8080:8080"
+    networks:
+      - wb
