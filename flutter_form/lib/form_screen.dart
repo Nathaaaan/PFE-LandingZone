@@ -10,6 +10,7 @@ import './buildTemplate.dart';
 import './buildSiteQuestion.dart';
 import 'package:intl/intl.dart';
 import './imageBanner.dart';
+import './dashboard_page.dart';
 
 @JsonSerializable()
 class FormScreen extends StatefulWidget {
@@ -30,6 +31,7 @@ class FormScreenState extends State<FormScreen> {
   String _international = 'Oui';
   String _response = 'Oui';
   String _maintenance = 'Interne';
+  String getUser = '';
 
   callback(varNbUsers){
     setState(() {
@@ -105,14 +107,33 @@ class FormScreenState extends State<FormScreen> {
           /**headers: {
             "Access-Control-Allow-Origin": "*", // Required for CORS support to work
             "Access-Control-Allow-Headers": "Origin,Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,locale",
-            "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+            "Content-Type": "application/json"
           },**/
           headers: {"Content-Type": "application/json"},
           body: jsonEncode(jsonBody)
       );
+
+      final decoded = json.decode(response.body) as Map<String, dynamic>;
+      //return decoded['Nombres_utilisateurs'];
+      setState(() {
+        getUser = decoded['Nombres_utilisateurs'];
+      });
     } catch(e) {
       print(e);
     }
+  }
+
+  getData() async{
+    var responseGet = await http.get(
+        Uri.parse("http://127.0.0.1:5000/test"));
+
+    final decoded = json.decode(responseGet.body) as Map<String, dynamic>;
+
+    setState(() {
+      getUser = decoded["Nombres_utilisateurs"];
+    });
+
   }
 
 
@@ -235,14 +256,22 @@ class FormScreenState extends State<FormScreen> {
                                   fontSize:16,
                                 ),
                               ),
-                              onPressed: () {
+                              onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
                                   _formKey.currentState!.save();
                                   //Map<String, dynamic> formMap = this.toMap();
                                   //var json = jsonEncode(formMap);
                                   //print(json.toString());
                                   //f.writeAsStringSync(json);
-                                  PostData();
+                                  await PostData();
+                                  //await Future.delayed(Duration(seconds: 3));
+                                  //getData();
+                                  Navigator.of(context)
+                                      .push(
+                                      MaterialPageRoute(
+                                          builder: (context) => dashboard(users: getUser,)
+                                      )
+                                  );
                                   //sendData();
                                   //print(_nbUsers);
                                   //print(_template);

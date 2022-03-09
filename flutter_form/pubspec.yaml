@@ -38,6 +38,7 @@ dependencies:
   http: ^0.13.4
   elastic_client: ^0.3.9
   intl: ^0.17.0
+  percent_indicator: ^4.0.0
 
 dev_dependencies:
   flutter_test:
